@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Container,
@@ -13,11 +13,23 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 export default function CreateShortUrl() {
   const [originalUrl, setOriginalUrl] = useState("");
   const [shortUrlPath, setShortUrlPath] = useState("");
   const [snackOpen, setSnackOpen] = useState(false);
+  const [token, setToken] = useState("");
+  const router = useRouter();
+  useEffect(() => {
+    // Check if localStorage is available on the client-side
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+    } else {
+      router.push("/login");
+    }
+  }, [router]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -29,6 +41,12 @@ export default function CreateShortUrl() {
           originalUrl,
           shortUrlPath,
           userId: "1",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
       setSnackOpen(true);
