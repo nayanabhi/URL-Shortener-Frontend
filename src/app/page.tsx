@@ -12,14 +12,24 @@ import {
   Box,
   Snackbar,
   Alert,
+  AlertColor,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
 
 export default function CreateShortUrl() {
   const [originalUrl, setOriginalUrl] = useState("");
   const [shortUrlPath, setShortUrlPath] = useState("");
-  const [snackOpen, setSnackOpen] = useState(false);
   const [token, setToken] = useState("");
+  const [snack, setSnack] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
   const router = useRouter();
   useEffect(() => {
     // Check if localStorage is available on the client-side
@@ -49,9 +59,29 @@ export default function CreateShortUrl() {
           },
         }
       );
-      setSnackOpen(true);
+      setSnack({
+        open: true,
+        message: "Short URL created successfully!",
+        severity: "success",
+      });
     } catch (error) {
-      console.error("Error creating shortened URL:", error);
+      if (error instanceof AxiosError) {
+        const errorMessage = error.response?.data?.message
+          ? `Failed to create short URL! ${error.response?.data?.message}`
+          : "Failed to create short URL!";
+
+        setSnack({
+          open: true,
+          message: errorMessage,
+          severity: "error",
+        });
+      } else {
+        setSnack({
+          open: true,
+          message: "An unknown error occurred.",
+          severity: "error",
+        });
+      }
     }
   };
 
@@ -151,12 +181,12 @@ export default function CreateShortUrl() {
         </Card>
 
         <Snackbar
-          open={snackOpen}
+          open={snack.open}
           autoHideDuration={4000}
-          onClose={() => setSnackOpen(false)}
+          onClose={() => setSnack({ ...snack, open: false })}
         >
-          <Alert severity="success" sx={{ width: "100%" }}>
-            Short URL created successfully!
+          <Alert severity={snack.severity} sx={{ width: "100%" }}>
+            {snack.message}
           </Alert>
         </Snackbar>
       </Container>
