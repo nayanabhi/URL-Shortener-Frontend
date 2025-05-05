@@ -33,12 +33,15 @@ export default function SignupPage() {
     }
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${process.env.NEXT_PUBLIC_URL_BACKEND_VERSION}/auth/register`, {
-        fullName,
-        phone,
-        email,
-        password,
-      });
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/${process.env.NEXT_PUBLIC_URL_BACKEND_VERSION}/auth/register`,
+        {
+          fullName,
+          phone,
+          email,
+          password,
+        }
+      );
 
       setSuccess("Account created successfully! You can now log in.");
       setTimeout(() => {
@@ -52,78 +55,89 @@ export default function SignupPage() {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Paper elevation={3} sx={{ padding: 4, mt: 10 }}>
-        <Typography variant="h5" component="h1" gutterBottom>
-          Create an Account
-        </Typography>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "linear-gradient(to right, #667eea, #764ba2)", // Full page gradient background
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 2,
+      }}
+    >
+      <Container maxWidth="sm">
+        <Paper elevation={3} sx={{ padding: 4, mt: 0 }}>
+          <Typography variant="h5" component="h1" gutterBottom>
+            Create an Account
+          </Typography>
 
-        {error && <Alert severity="error">{error}</Alert>}
-        {success && <Alert severity="success">{success}</Alert>}
+          {error && <Alert severity="error">{error}</Alert>}
+          {success && <Alert severity="success">{success}</Alert>}
 
-        <Box component="form" onSubmit={handleSignup} sx={{ mt: 2 }}>
-        <TextField
-            fullWidth
-            label="Full Name"
-            type="text"
-            variant="outlined"
-            margin="normal"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            required
-          />
-          <TextField
-            fullWidth
-            label="Email"
-            type="email"
-            variant="outlined"
-            margin="normal"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <TextField
-            fullWidth
-            label="Phone"
-            type="phone"
-            variant="outlined"
-            margin="normal"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            type="password"
-            variant="outlined"
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <TextField
-            fullWidth
-            label="Confirm Password"
-            type="password"
-            variant="outlined"
-            margin="normal"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
-            Sign Up
-          </Button>
-        </Box>
+          <Box component="form" onSubmit={handleSignup} sx={{ mt: 2 }}>
+            <TextField
+              fullWidth
+              label="Full Name"
+              type="text"
+              variant="outlined"
+              margin="normal"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+            />
+            <TextField
+              fullWidth
+              label="Email"
+              type="email"
+              variant="outlined"
+              margin="normal"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <TextField
+              fullWidth
+              label="Phone"
+              type="phone"
+              variant="outlined"
+              margin="normal"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              type="password"
+              variant="outlined"
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <TextField
+              fullWidth
+              label="Confirm Password"
+              type="password"
+              variant="outlined"
+              margin="normal"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
+              Sign Up
+            </Button>
+          </Box>
 
-        {/* Login link */}
-        <Box mt={2} display="flex" justifyContent="center">
-          <Link href="/login" variant="body2">
-            Already have an account? Login
-          </Link>
-        </Box>
-      </Paper>
-    </Container>
+          {/* Login link */}
+          <Box mt={2} display="flex" justifyContent="center">
+            <Link href="/login" variant="body2">
+              Already have an account? Login
+            </Link>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
   );
 }

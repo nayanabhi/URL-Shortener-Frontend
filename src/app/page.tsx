@@ -31,6 +31,12 @@ export default function CreateShortUrl() {
     severity: "success",
   });
   const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
+
   useEffect(() => {
     // Check if localStorage is available on the client-side
     const storedToken = localStorage.getItem("token");
@@ -96,6 +102,24 @@ export default function CreateShortUrl() {
         padding: 2,
       }}
     >
+      <Button
+        variant="outlined"
+        onClick={handleLogout}
+        sx={{
+          position: "absolute",
+          top: 16,
+          right: 16,
+          color: "#fff",
+          borderColor: "#ffffff", // green border
+          backgroundColor: "rgba(0, 0, 0, 0.4)", // green fill
+          "&:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.6)", // slightly darker on hover
+            borderColor: "#ffffff",
+          },
+        }}
+      >
+        Logout
+      </Button>
       <Container maxWidth="sm">
         <Card
           elevation={10}
@@ -179,7 +203,6 @@ export default function CreateShortUrl() {
             )}
           </CardContent>
         </Card>
-
         <Snackbar
           open={snack.open}
           autoHideDuration={4000}

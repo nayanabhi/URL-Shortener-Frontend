@@ -24,11 +24,14 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/${process.env.NEXT_PUBLIC_URL_BACKEND_VERSION}/auth/login`, {
-        email,
-        phone: email,
-        password,
-      });
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/${process.env.NEXT_PUBLIC_URL_BACKEND_VERSION}/auth/login`,
+        {
+          email,
+          phone: email,
+          password,
+        }
+      );
 
       const access_token = response.data;
 
@@ -45,47 +48,58 @@ export default function LoginPage() {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Paper elevation={3} sx={{ padding: 4, mt: 10 }}>
-        <Typography variant="h5" component="h1" gutterBottom>
-          Login to Your Account
-        </Typography>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "linear-gradient(to right, #667eea, #764ba2)", // Full page gradient background
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 2,
+      }}
+    >
+      <Container maxWidth="sm">
+        <Paper elevation={3} sx={{ padding: 4, mt: -10 }}>
+          <Typography variant="h5" component="h1" gutterBottom>
+            Login to Your Account
+          </Typography>
 
-        {error && <Alert severity="error">{error}</Alert>}
+          {error && <Alert severity="error">{error}</Alert>}
 
-        <Box component="form" onSubmit={handleLogin} sx={{ mt: 2 }}>
-          <TextField
-            fullWidth
-            label="Email or Phone"
-            type="text"
-            variant="outlined"
-            margin="normal"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            type="password"
-            variant="outlined"
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
-            Login
-          </Button>
+          <Box component="form" onSubmit={handleLogin} sx={{ mt: 2 }}>
+            <TextField
+              fullWidth
+              label="Email or Phone"
+              type="text"
+              variant="outlined"
+              margin="normal"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              type="password"
+              variant="outlined"
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
+              Login
+            </Button>
 
-          {/* Sign-up link */}
-          <Box mt={2} display="flex" justifyContent="center">
-            <Link href="/signup" variant="body2">
-              Don&apos;t have an account? Sign up
-            </Link>
+            {/* Sign-up link */}
+            <Box mt={2} display="flex" justifyContent="center">
+              <Link href="/signup" variant="body2">
+                Don&apos;t have an account? Sign up
+              </Link>
+            </Box>
           </Box>
-        </Box>
-      </Paper>
-    </Container>
+        </Paper>
+      </Container>
+    </Box>
   );
 }
