@@ -149,6 +149,7 @@ export default function CreateShortUrl() {
                   value={originalUrl}
                   onChange={(e) => setOriginalUrl(e.target.value)}
                   variant="outlined"
+                  autoComplete="off"
                 />
               </Box>
 
@@ -160,6 +161,7 @@ export default function CreateShortUrl() {
                   value={shortUrlPath}
                   onChange={(e) => setShortUrlPath(e.target.value)}
                   variant="outlined"
+                  autoComplete="off"
                 />
               </Box>
 
