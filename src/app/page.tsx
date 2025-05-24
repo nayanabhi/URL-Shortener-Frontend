@@ -16,11 +16,13 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
+import {QRCodeSVG}from "qrcode.react";
 
 export default function CreateShortUrl() {
   const [originalUrl, setOriginalUrl] = useState("");
   const [shortUrlPath, setShortUrlPath] = useState("");
   const [token, setToken] = useState("");
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [snack, setSnack] = useState<{
     open: boolean;
     message: string;
@@ -70,6 +72,8 @@ export default function CreateShortUrl() {
         message: "Short URL created successfully!",
         severity: "success",
       });
+
+      setQrCodeUrl(`${window.location.origin}/${shortUrlPath}`);
     } catch (error) {
       if (error instanceof AxiosError) {
         const errorMessage = error.response?.data?.message
@@ -199,6 +203,14 @@ export default function CreateShortUrl() {
                     </a>
                   </Box>
                 </Typography>
+
+                {qrCodeUrl && (
+                  <Box
+                    sx={{ mt: 2, display: "flex", justifyContent: "center" }}
+                  >
+                    <QRCodeSVG value={qrCodeUrl} size={256} />
+                  </Box>
+                )}
               </Box>
             )}
           </CardContent>
