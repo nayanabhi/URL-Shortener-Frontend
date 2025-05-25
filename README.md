@@ -17,7 +17,7 @@ A compact and efficient **URL Shortener Application** 🚀 — ideal for generat
 
 ```http
 POST /shorten
-Body: { "url": "https://example.com/very/long/url" }
+Body: { "originalUrl": "https://example.com/very/long/url", "shortUrlPath" :  "abc123" }
 
 Response:
 {
