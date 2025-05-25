@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import {
   Container,
@@ -13,15 +13,22 @@ import {
   Snackbar,
   Alert,
   AlertColor,
+  Tooltip,
 } from "@mui/material";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
-import {QRCodeSVG}from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
+import debounce from "lodash.debounce";
 
 export default function CreateShortUrl() {
   const [originalUrl, setOriginalUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [available, setAvailable] = useState(null);
   const [shortUrlPath, setShortUrlPath] = useState("");
+  const [finalUrlPath, setFinalUrlPath] = useState("");
   const [token, setToken] = useState("");
+  const tokenRef = useRef(token);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [snack, setSnack] = useState<{
     open: boolean;
@@ -39,6 +46,36 @@ export default function CreateShortUrl() {
     router.push("/login");
   };
 
+  const checkAlias = useCallback(
+    debounce(async (value: string) => {
+      console.log(54356344, value);
+      if (!value || value.length > 7 || !/^[a-zA-Z0-9-]+$/.test(value)) {
+        setAvailable(null);
+        return;
+      }
+
+      setLoading(true);
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/${process.env.NEXT_PUBLIC_URL_BACKEND_VERSION}/url/checkAlias?alias=${value}`,
+        {
+          headers: {
+            Authorization: `Bearer ${tokenRef.current}`,
+          },
+        }
+      );
+      const data = await res?.data;
+      console.log(435345, data);
+      setAvailable(data.available);
+      setLoading(false);
+    }, 500),
+    []
+  );
+
+  const handleChange = (e) => {
+    setShortUrlPath(e.target.value);
+    checkAlias(e.target.value);
+  };
+
   useEffect(() => {
     // Check if localStorage is available on the client-side
     const storedToken = localStorage.getItem("token");
@@ -49,16 +86,20 @@ export default function CreateShortUrl() {
     }
   }, [router]);
 
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
       // Call your backend to store the URL mapping
+      setLoading(true);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/${process.env.NEXT_PUBLIC_URL_BACKEND_VERSION}/url/shorten`,
         {
           originalUrl,
           shortUrlPath,
-          userId: "1",
         },
         {
           headers: {
@@ -72,9 +113,11 @@ export default function CreateShortUrl() {
         message: "Short URL created successfully!",
         severity: "success",
       });
-
-      setQrCodeUrl(`${window.location.origin}/${shortUrlPath}`);
+      setFinalUrlPath(response?.data?.shortUrlPath);
+      setQrCodeUrl(`${window.location.origin}/${response?.data?.shortUrlPath}`);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       if (error instanceof AxiosError) {
         const errorMessage = error.response?.data?.message
           ? `Failed to create short URL! ${error.response?.data?.message}`
@@ -92,6 +135,8 @@ export default function CreateShortUrl() {
           severity: "error",
         });
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -157,12 +202,38 @@ export default function CreateShortUrl() {
                 <TextField
                   label="Custom Path"
                   fullWidth
-                  required
                   value={shortUrlPath}
-                  onChange={(e) => setShortUrlPath(e.target.value)}
+                  onChange={handleChange}
                   variant="outlined"
                   autoComplete="off"
+                  error={
+                    !!shortUrlPath && !/^[a-zA-Z0-9-]{1,7}$/.test(shortUrlPath)
+                  }
+                  slotProps={{
+                    htmlInput: { maxLength: 7 },
+                    input: {
+                      endAdornment: (
+                        <Tooltip
+                          title="Only a-z, A-Z and 0-9 allowed. Max 7 characters."
+                          placement="top"
+                          arrow
+                        >
+                          <InfoOutlinedIcon sx={{ ml: 1, cursor: "pointer" }} />
+                        </Tooltip>
+                      ),
+                    },
+                  }}
                 />
+                <div className="mt-1 text-sm">
+                  {!loading && available === true && shortUrlPath && (
+                    <span className="text-green-600">
+                      ✅ Alias is available
+                    </span>
+                  )}
+                  {!loading && available === false && shortUrlPath && (
+                    <span className="text-red-600">❌ Alias already taken</span>
+                  )}
+                </div>
               </Box>
 
               <Button
@@ -170,6 +241,7 @@ export default function CreateShortUrl() {
                 variant="contained"
                 size="large"
                 fullWidth
+                disabled={loading}
                 sx={{
                   background: "linear-gradient(to right, #43cea2, #185a9d)",
                   color: "white",
@@ -181,7 +253,7 @@ export default function CreateShortUrl() {
               </Button>
             </form>
 
-            {shortUrlPath && (
+            {finalUrlPath && (
               <Box sx={{ mt: 4 }}>
                 <Typography
                   variant="h6"
@@ -197,11 +269,11 @@ export default function CreateShortUrl() {
                     sx={{ color: "#1976d2", wordBreak: "break-word" }}
                   >
                     <a
-                      href={`/${shortUrlPath}`}
+                      href={`/${finalUrlPath}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {`${window.location.origin}/${shortUrlPath}`}
+                      {`${window.location.origin}/${finalUrlPath}`}
                     </a>
                   </Box>
                 </Typography>
