@@ -207,7 +207,7 @@ export default function CreateShortUrl() {
                   variant="outlined"
                   autoComplete="off"
                   error={
-                    !!shortUrlPath && !/^[a-zA-Z0-9-]{1,7}$/.test(shortUrlPath)
+                    !!shortUrlPath && !/^[a-zA-Z0-9]{1,7}$/.test(shortUrlPath)
                   }
                   slotProps={{
                     htmlInput: { maxLength: 7 },
