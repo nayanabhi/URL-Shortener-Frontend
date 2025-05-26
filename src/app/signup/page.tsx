@@ -13,6 +13,8 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import apiRequest from "@/utils/apiCalls";
+import { HttpMethod } from "@/utils/httpMethods";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -33,15 +35,12 @@ export default function SignupPage() {
     }
 
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/${process.env.NEXT_PUBLIC_URL_BACKEND_VERSION}/auth/register`,
-        {
-          fullName,
-          phone,
-          email,
-          password,
-        }
-      );
+
+      const response = await apiRequest({
+        method: HttpMethod.POST,
+        url: "/auth/register",
+        data: { fullName, phone, email, password },
+      });
 
       setSuccess("Account created successfully! You can now log in.");
       setTimeout(() => {

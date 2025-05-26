@@ -20,6 +20,8 @@ import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import { QRCodeSVG } from "qrcode.react";
 import debounce from "lodash.debounce";
+import apiRequest from "@/utils/apiCalls";
+import { HttpMethod } from "@/utils/httpMethods";
 
 export default function CreateShortUrl() {
   const [originalUrl, setOriginalUrl] = useState("");
@@ -55,17 +57,13 @@ export default function CreateShortUrl() {
       }
 
       setLoading(true);
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/${process.env.NEXT_PUBLIC_URL_BACKEND_VERSION}/url/checkAlias?alias=${value}`,
-        {
-          headers: {
-            Authorization: `Bearer ${tokenRef.current}`,
-          },
-        }
-      );
-      const data = await res?.data;
-      console.log(435345, data);
-      setAvailable(data.available);
+      const res = await apiRequest({
+        method: HttpMethod.GET,
+        url: '/url/checkAlias',
+        params: { alias: `${value}` },
+      });
+
+      setAvailable(res?.available);
       setLoading(false);
     }, 500),
     []
@@ -95,25 +93,17 @@ export default function CreateShortUrl() {
     try {
       // Call your backend to store the URL mapping
       setLoading(true);
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/${process.env.NEXT_PUBLIC_URL_BACKEND_VERSION}/url/shorten`,
-        {
-          originalUrl,
-          shortUrlPath,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await apiRequest({
+        method: HttpMethod.POST,
+        url: '/url/shorten',
+        data: { originalUrl,  shortUrlPath },
+      });
       setSnack({
         open: true,
         message: "Short URL created successfully!",
         severity: "success",
       });
-      setFinalUrlPath(response?.data?.shortUrlPath);
+      setFinalUrlPath(response?.shortUrlPath);
       setQrCodeUrl(`${window.location.origin}/${response?.data?.shortUrlPath}`);
       setLoading(false);
     } catch (error) {

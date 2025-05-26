@@ -13,6 +13,8 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { HttpMethod } from "@/utils/httpMethods";
+import apiRequest from "@/utils/apiCalls";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -24,21 +26,12 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/${process.env.NEXT_PUBLIC_URL_BACKEND_VERSION}/auth/login`,
-        {
-          email,
-          phone: email,
-          password,
-        }
-      );
+      const response = await apiRequest({
+        method: HttpMethod.POST,
+        url: '/auth/login',
+        data: { email,  phone: email, password },
+      });
 
-      const access_token = response.data;
-
-      // Store token in local storage
-      localStorage.setItem("token", access_token);
-
-      // Redirect to dashboard
       router.push("/");
     } catch (error: any) {
       const errorMessage =
