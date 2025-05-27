@@ -50,6 +50,13 @@ This service is designed to be extensible. You can easily add:
 -  ♻️ **Auto-expiry** support for temporary URLs (if implemented)
 
 
+## Screenshots
+<img width="977" alt="Screenshot 2025-05-28 at 1 06 37 AM" src="https://github.com/user-attachments/assets/6825f007-24d6-4296-8391-59e683e7c0e1" />
+<img width="1440" alt="Screenshot 2025-05-28 at 1 08 22 AM" src="https://github.com/user-attachments/assets/8b37779c-bde9-492b-9db3-616ad9874433" />
+
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
