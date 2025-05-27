@@ -29,8 +29,6 @@ export default function CreateShortUrl() {
   const [available, setAvailable] = useState(null);
   const [shortUrlPath, setShortUrlPath] = useState("");
   const [finalUrlPath, setFinalUrlPath] = useState("");
-  const [token, setToken] = useState("");
-  const tokenRef = useRef(token);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [snack, setSnack] = useState<{
     open: boolean;
@@ -43,8 +41,11 @@ export default function CreateShortUrl() {
   });
   const router = useRouter();
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+  const handleLogout = async () => {
+    await apiRequest({
+      method: HttpMethod.POST,
+      url: '/auth/logout'
+    });
     router.push("/login");
   };
 
@@ -74,19 +75,6 @@ export default function CreateShortUrl() {
     checkAlias(e.target.value);
   };
 
-  useEffect(() => {
-    // Check if localStorage is available on the client-side
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setToken(storedToken);
-    } else {
-      router.push("/login");
-    }
-  }, [router]);
-
-  useEffect(() => {
-    tokenRef.current = token;
-  }, [token]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
