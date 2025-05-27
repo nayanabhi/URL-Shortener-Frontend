@@ -69,6 +69,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="off"
             />
             <TextField
               fullWidth
@@ -79,6 +80,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="off"
             />
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
               Login
